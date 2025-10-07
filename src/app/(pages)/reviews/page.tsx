@@ -3,7 +3,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthProvider";
-import { useReviews } from "@/contexts/ReviewProvider";
+import {
+  useReviews,
+  useReviewsLoading,
+  useReviewsError,
+  useReviewStore,
+} from "@/stores/reviewStore";
 import { useReviewComparison } from "@/hooks/useDataComparison";
 import { useReviewFiltering } from "@/hooks/useFiltering";
 import FilterComponent, {
@@ -16,7 +21,10 @@ import AddReviewForm from "@/components/reviews/AddReviewForm";
 
 const Page = () => {
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const { reviews, loading, error, fetchReviews } = useReviews();
+  const reviews = useReviews();
+  const loading = useReviewsLoading();
+  const error = useReviewsError();
+  const { fetchReviews } = useReviewStore();
   const router = useRouter();
   const [filteredReviews, setFilteredReviews] = useState<Review[]>([]);
 

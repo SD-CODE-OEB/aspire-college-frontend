@@ -4,7 +4,12 @@ import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthProvider";
-import { useFavorites } from "@/contexts/FavoriteProvider";
+import {
+  useFavorites,
+  useFavoritesLoading,
+  useFavoritesError,
+  useFavoriteStore,
+} from "@/stores/favoriteStore";
 import { useFavoriteFiltering } from "@/hooks/useFiltering";
 import { useFavoriteComparison } from "@/hooks/useDataComparison";
 import FilterComponent, {
@@ -25,7 +30,10 @@ import {
 
 const Page = () => {
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const { favorites, loading, error, fetchFavorites } = useFavorites();
+  const favorites = useFavorites();
+  const loading = useFavoritesLoading();
+  const error = useFavoritesError();
+  const { fetchFavorites } = useFavoriteStore();
   const router = useRouter();
   const [filteredFavorites, setFilteredFavorites] = useState<Favorite[]>([]);
 

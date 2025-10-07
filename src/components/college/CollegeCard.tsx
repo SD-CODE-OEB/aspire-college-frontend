@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { College } from "@/types/college.types";
-import { useFavorites } from "@/contexts/FavoriteProvider";
+import {
+  useFavoritesLoading,
+  useFavoriteStore,
+  useIsFavorite,
+} from "@/stores/favoriteStore";
 import {
   BookOpen,
   Heart,
@@ -12,12 +16,9 @@ import {
 } from "lucide-react";
 
 const CollegeCard = ({ college }: { college: College }) => {
-  const {
-    addFavorite,
-    removeFavorite,
-    isFavorite,
-    loading: favLoading,
-  } = useFavorites();
+  const { addFavorite, removeFavorite } = useFavoriteStore();
+  const favLoading = useFavoritesLoading();
+  const isFavoriteFlag = useIsFavorite(college.collegeId);
   const [isToggling, setIsToggling] = useState(false);
 
   const handleFavoriteToggle = async () => {
@@ -25,7 +26,7 @@ const CollegeCard = ({ college }: { college: College }) => {
 
     setIsToggling(true);
     try {
-      if (isFavorite(college.collegeId)) {
+      if (isFavoriteFlag) {
         await removeFavorite(college.collegeId);
       } else {
         await addFavorite({ collegeId: college.collegeId });
@@ -65,14 +66,12 @@ const CollegeCard = ({ college }: { college: College }) => {
             onClick={handleFavoriteToggle}
             disabled={isToggling || favLoading}
             className={`group/heart relative p-3 rounded-2xl backdrop-blur-sm transition-all duration-300 transform hover:scale-110 ${
-              isFavorite(college.collegeId)
+              isFavoriteFlag
                 ? "bg-gradient-to-br from-red-500/20 to-pink-500/20 text-red-500 border border-red-500/30 shadow-lg shadow-red-500/25"
                 : "bg-muted/50 text-muted-foreground hover:text-red-500 hover:bg-gradient-to-br hover:from-red-500/10 hover:to-pink-500/10 border border-border/50 hover:border-red-500/30"
             } ${isToggling ? "opacity-50 cursor-not-allowed" : ""}`}
             title={
-              isFavorite(college.collegeId)
-                ? "Remove from favorites"
-                : "Add to favorites"
+              isFavoriteFlag ? "Remove from favorites" : "Add to favorites"
             }
           >
             {isToggling ? (
@@ -80,11 +79,11 @@ const CollegeCard = ({ college }: { college: College }) => {
             ) : (
               <Heart
                 className="w-6 h-6 transition-transform duration-300 group-hover/heart:scale-110"
-                fill={isFavorite(college.collegeId) ? "currentColor" : "none"}
+                fill={isFavoriteFlag ? "currentColor" : "none"}
                 stroke="currentColor"
               />
             )}
-            {isFavorite(college.collegeId) && (
+            {isFavoriteFlag && (
               <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover/heart:opacity-100 transition-opacity duration-300"></div>
             )}
           </button>

@@ -2,8 +2,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthProvider";
-import { useColleges } from "@/contexts/CollegeProvider";
-import { useFavorites } from "@/contexts/FavoriteProvider";
+import {
+  useColleges,
+  useCollegesLoading,
+  useCollegesError,
+  useCollegeStore,
+} from "@/stores/collegeStore";
 import { useCollegeFiltering } from "@/hooks/useFiltering";
 import { useCollegeComparison } from "@/hooks/useDataComparison";
 import FilterComponent, {
@@ -12,11 +16,15 @@ import FilterComponent, {
 import { AlertCircle, Search, Grid3X3, List } from "lucide-react";
 import type { College } from "@/types/college.types";
 import CollegeCard from "@/components/college/CollegeCard";
+import { useFavoriteStore } from "@/stores/favoriteStore";
 
 const Page = () => {
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const { colleges, loading, error, fetchColleges } = useColleges();
-  const { fetchFavorites } = useFavorites();
+  const colleges = useColleges();
+  const loading = useCollegesLoading();
+  const error = useCollegesError();
+  const { fetchColleges } = useCollegeStore();
+  const { fetchFavorites } = useFavoriteStore();
   const router = useRouter();
   const [filteredColleges, setFilteredColleges] = useState<College[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "row">("grid");

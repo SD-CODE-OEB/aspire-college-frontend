@@ -16,6 +16,15 @@ export const reviewApi = {
     }
   },
 
+  async getUserReviews(): Promise<ReviewsResponse> {
+    try {
+      const response = await api.get<ReviewsResponse>("/reviews/user/");
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error, "Failed to fetch user reviews");
+    }
+  },
+
   async createReview(data: CreateReviewRequest): Promise<CreateReviewResponse> {
     try {
       const response = await api.post<CreateReviewResponse>("/reviews/", data);

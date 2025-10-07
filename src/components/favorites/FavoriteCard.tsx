@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import type { Favorite } from "@/types/favorite.types";
-import { useFavorites } from "@/contexts/FavoriteProvider";
+import { useFavoritesLoading, useFavoriteStore } from "@/stores/favoriteStore";
 import { Heart, Loader2, MapPin, Star } from "lucide-react";
 
 const FavoriteCard = ({ favorite }: { favorite: Favorite }) => {
-  const { removeFavorite, loading } = useFavorites();
+  const { removeFavorite } = useFavoriteStore();
+  const loading = useFavoritesLoading();
   const [isRemoving, setIsRemoving] = useState(false);
 
   const handleRemoveFavorite = async () => {

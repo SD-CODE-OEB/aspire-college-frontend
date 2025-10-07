@@ -1,12 +1,13 @@
 import { Loader2, CheckCircle, MessageSquare } from "lucide-react";
 import StarRating from "./StarRating";
-import { useReviews } from "@/contexts/ReviewProvider";
-import { useColleges } from "@/contexts/CollegeProvider";
+import { useColleges } from "@/stores/collegeStore";
+import { useReviewsLoading, useReviewStore } from "@/stores/reviewStore";
 import { useState } from "react";
 
 const AddReviewForm = ({ onReviewAdded }: { onReviewAdded: () => void }) => {
-  const { colleges } = useColleges();
-  const { createReview, loading } = useReviews();
+  const colleges = useColleges();
+  const { createReview } = useReviewStore();
+  const loading = useReviewsLoading();
   const CHARACTER_LIMIT = 500;
   const [formState, setFormState] = useState({
     selectedCollegeId: "" as number | "",
