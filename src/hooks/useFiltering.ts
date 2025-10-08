@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { FilterOptions } from "@/components/FilterComponent";
-import type { College } from "@/types/college.types";
+import type { CollegeCourseItem } from "@/types/college.types";
 import type { Review } from "@/types/review.types";
 import type { Favorite } from "@/types/favorite.types";
 
@@ -33,7 +33,7 @@ const getFeeRange = <T extends { fee: string }>(
 };
 
 // Hook for filtering and sorting colleges
-export const useCollegeFiltering = (colleges: College[]) => {
+export const useCollegeFiltering = (colleges: CollegeCourseItem[]) => {
   const locations = useMemo(
     () => getUniqueValues(colleges, "location"),
     [colleges]
@@ -45,7 +45,7 @@ export const useCollegeFiltering = (colleges: College[]) => {
   const feeRange = useMemo(() => getFeeRange(colleges), [colleges]);
 
   const filterAndSortColleges = useMemo(() => {
-    return (filters: FilterOptions): College[] => {
+    return (filters: FilterOptions): CollegeCourseItem[] => {
       let filtered = [...colleges];
 
       // Apply search filter

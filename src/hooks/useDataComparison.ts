@@ -1,5 +1,5 @@
 import { useRef, useMemo } from "react";
-import type { College } from "@/types/college.types";
+import type { CollegeCourseItem } from "@/types/college.types";
 import type { Review } from "@/types/review.types";
 import type { Favorite } from "@/types/favorite.types";
 
@@ -79,7 +79,9 @@ export function useArrayComparison<T>(data: T[], idField: keyof T): T[] {
 /**
  * Hook specifically for college data comparison
  */
-export function useCollegeComparison(colleges: College[]): College[] {
+export function useCollegeComparison(
+  colleges: CollegeCourseItem[]
+): CollegeCourseItem[] {
   return useArrayComparison(colleges, "collegeId");
 }
 
