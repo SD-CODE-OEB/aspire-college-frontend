@@ -17,6 +17,7 @@ const Navbar = () => {
   const navItems = [
     { name: "Home", href: "/" },
     { name: "Colleges", href: "/colleges" },
+    { name: "Courses", href: "/courses" },
     { name: "Reviews", href: "/reviews" },
     { name: "Favorites", href: "/favorites" },
   ];
