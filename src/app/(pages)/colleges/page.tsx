@@ -97,7 +97,7 @@ export default function CollegesPage() {
       )}
 
       {error && (
-        <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg mb-6">
+        <div className="bg-amber-400/10 border border-amber-400/20 text-amber-400 px-4 py-3 rounded-lg mb-6">
           <div className="flex items-center">
             <AlertCircle className="w-5 h-5 mr-2" />
             {error}

@@ -1,14 +1,19 @@
 import { Loader2, CheckCircle, MessageSquare } from "lucide-react";
 import StarRating from "./StarRating";
-import { useColleges } from "@/stores/collegeStore";
+import { useColleges, useCollegeStore } from "@/stores/collegeStore";
 import { useReviewsLoading, useReviewStore } from "@/stores/reviewStore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const AddReviewForm = ({ onReviewAdded }: { onReviewAdded: () => void }) => {
   const colleges = useColleges();
+  const { fetchColleges } = useCollegeStore();
   const { createReview } = useReviewStore();
   const loading = useReviewsLoading();
   const CHARACTER_LIMIT = 500;
+
+  useEffect(() => {
+    fetchColleges();
+  }, [fetchColleges]);
   const [formState, setFormState] = useState({
     selectedCollegeId: "" as number | "",
     rating: 0,
@@ -89,7 +94,7 @@ const AddReviewForm = ({ onReviewAdded }: { onReviewAdded: () => void }) => {
                     e.target.value === "" ? "" : Number(e.target.value),
                 }))
               }
-              className="w-full px-4 py-4 bg-gradient-to-r from-background/90 to-background/70 backdrop-blur-sm border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-300 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5"
+              className="w-full px-4 py-4 bg-gradient-to-r from-background/90 to-background/70 backdrop-blur-sm border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/30 transition-all duration-300 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 dark:bg-background dark:text-accent"
               required
             >
               <option value="">Choose a college...</option>
