@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthProvider";
 import {
@@ -8,17 +9,12 @@ import {
   useCollegesError,
   useCollegeStore,
 } from "@/stores/collegeStore";
-import { useCollegeFiltering } from "@/hooks/useFiltering";
-import { useCollegeComparison } from "@/hooks/useDataComparison";
-import FilterComponent, {
-  type FilterOptions,
-} from "@/components/FilterComponent";
-import { AlertCircle, Search, Grid3X3, List } from "lucide-react";
-import type { College } from "@/types/college.types";
+import { AlertCircle, Plus } from "lucide-react";
 import CollegeCard from "@/components/college/CollegeCard";
 import { useFavoriteStore } from "@/stores/favoriteStore";
+import Link from "next/link";
 
-const Page = () => {
+export default function CollegesPage() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const colleges = useColleges();
   const loading = useCollegesLoading();
@@ -26,20 +22,12 @@ const Page = () => {
   const { fetchColleges } = useCollegeStore();
   const { fetchFavorites } = useFavoriteStore();
   const router = useRouter();
-  const [filteredColleges, setFilteredColleges] = useState<College[]>([]);
-  const [viewMode, setViewMode] = useState<"grid" | "row">("grid");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const optimizedColleges = useCollegeComparison(colleges);
-
-  const { locations, courses, feeRange, filterAndSortColleges } =
-    useCollegeFiltering(optimizedColleges);
-
-  const handleFilterChange = useCallback(
-    (filters: FilterOptions) => {
-      const filtered = filterAndSortColleges(filters);
-      setFilteredColleges(filtered);
-    },
-    [filterAndSortColleges]
+  const filteredColleges = colleges.filter(
+    (college) =>
+      college.collegeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      college.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
@@ -49,16 +37,10 @@ const Page = () => {
     }
 
     if (isAuthenticated) {
+      fetchColleges();
       fetchFavorites();
     }
-  }, [isAuthenticated, authLoading, router, fetchFavorites]);
-
-  // Initialize filtered colleges when colleges change
-  useEffect(() => {
-    if (optimizedColleges) {
-      setFilteredColleges(optimizedColleges);
-    }
-  }, [optimizedColleges]);
+  }, [isAuthenticated, authLoading, router, fetchColleges, fetchFavorites]);
 
   if (authLoading) {
     return (
@@ -74,56 +56,34 @@ const Page = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Explore Colleges
-        </h1>
-        <p className="text-muted-foreground">
-          Discover and compare colleges from our comprehensive database
-        </p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Explore Colleges
+          </h1>
+          <p className="text-muted-foreground">
+            Discover colleges from our comprehensive database
+          </p>
+        </div>
+        <Link
+          href="/colleges/add"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add College</span>
+        </Link>
       </div>
 
-      <div className="mb-8">
-        <FilterComponent
-          onFilterChange={handleFilterChange}
-          locations={locations}
-          courses={courses}
-          minFeeRange={feeRange.min}
-          maxFeeRange={feeRange.max}
-          showAdvanced={true}
-        />
-      </div>
-
-      {/* View Toggle */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-4">
-          <span className="text-sm font-medium text-muted-foreground">
-            View:
-          </span>
-          <div className="flex items-center bg-muted/50 backdrop-blur-sm rounded-xl p-1 border border-border/50">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                viewMode === "grid"
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
-              }`}
-            >
-              <Grid3X3 className="w-4 h-4" />
-              <span>Grid</span>
-            </button>
-            <button
-              onClick={() => setViewMode("row")}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                viewMode === "row"
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
-              }`}
-            >
-              <List className="w-4 h-4" />
-              <span>List</span>
-            </button>
-          </div>
+      <div className="mb-6">
+        <div className="relative">
+          <AlertCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search by college name or location..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+          />
         </div>
       </div>
 
@@ -165,37 +125,23 @@ const Page = () => {
         filteredColleges.length === 0 &&
         colleges.length > 0 && (
           <div className="text-center py-12">
-            <Search className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <AlertCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-foreground mb-2">
               No colleges found
             </h3>
-            <p className="text-muted-foreground mb-4">
-              Try adjusting your filters or clear them to see all colleges.
+            <p className="text-muted-foreground">
+              Try adjusting your search term.
             </p>
           </div>
         )}
 
-      {/* Colleges Display */}
       {!loading && !error && filteredColleges.length > 0 && (
-        <div
-          className={`${
-            viewMode === "grid"
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              : "space-y-4"
-          }`}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredColleges.map((college) => (
-            <div
-              key={college.collegeId}
-              className={viewMode === "row" ? "max-w-none" : ""}
-            >
-              <CollegeCard college={college} />
-            </div>
+            <CollegeCard key={college.collegeId} college={college} />
           ))}
         </div>
       )}
     </div>
   );
-};
-
-export default Page;
+}
